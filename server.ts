@@ -10,8 +10,10 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new Database("engfotech.db");
-db.pragma('foreign_keys = ON');
+// The database path is overridable so tests can use an isolated (or in-memory) DB.
+const DB_PATH = process.env.DATABASE_PATH || "engfotech.db";
+export const db = new Database(DB_PATH);
+db.pragma("foreign_keys = ON");
 
 // Initialize Database
 db.exec(`
@@ -66,9 +68,8 @@ try {
   }
 }
 
-async function startServer() {
+export async function createApp() {
   const app = express();
-  const PORT = process.env.PORT || 3000;
   app.use(express.json());
 
   // --- API Routes ---
@@ -76,9 +77,20 @@ async function startServer() {
   // Register
   app.post("/api/auth/register", (req, res) => {
     const { email, password, name } = req.body;
+
+    if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: "A valid email is required" });
+    }
+    if (typeof password !== "string" || password.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    }
+
     try {
-      const result = db.prepare("INSERT INTO users (email, password, name) VALUES (?, ?, ?)").run(email, password, name || email.split('@')[0]);
-      const user = { id: result.lastInsertRowid, email, name: name || email.split('@')[0] };
+      const fallbackName = email.split("@")[0];
+      const result = db
+        .prepare("INSERT INTO users (email, password, name) VALUES (?, ?, ?)")
+        .run(email, password, name || fallbackName);
+      const user = { id: result.lastInsertRowid, email, name: name || fallbackName };
       res.json({ user });
     } catch (error: any) {
       if (error.message.includes("UNIQUE constraint failed")) {
@@ -92,6 +104,9 @@ async function startServer() {
   // Login
   app.post("/api/auth/login", (req, res) => {
     const { email, password } = req.body;
+    if (typeof email !== "string" || typeof password !== "string") {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
     const user = db.prepare("SELECT * FROM users WHERE email = ? AND password = ?").get(email, password) as any;
     if (user) {
       const { password: _, ...userWithoutPassword } = user;
@@ -251,23 +266,36 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  // Vite middleware for local development, static files in production, neither in tests.
+  const nodeEnv = process.env.NODE_ENV;
+  if (nodeEnv === "production") {
+    app.use(express.static(path.join(__dirname, "dist")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "dist", "index.html"));
+    });
+  } else if (nodeEnv !== "test") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
-    app.use(express.static(path.join(__dirname, "dist")));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "dist", "index.html"));
-    });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  return app;
 }
 
-startServer();
+const isDirectRun = process.argv[1]
+  ? path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  : false;
+
+if (isDirectRun) {
+  const port = Number(process.env.PORT ?? 3000);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error(`Invalid PORT: ${process.env.PORT}`);
+  }
+  createApp().then((app) => {
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${port}`);
+    });
+  });
+}

@@ -10,23 +10,11 @@ interface Message {
   content: string;
 }
 
-export const MockInterview: React.FC<{ context: string; analysis: AnalysisResult }> = ({ context, analysis }) => {
+export const MockInterview: React.FC<{ context: string; analysis: AnalysisResult }> = ({ context }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      startInterview();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
 
   const startInterview = async () => {
     setIsLoading(true);
@@ -43,6 +31,20 @@ export const MockInterview: React.FC<{ context: string; analysis: AnalysisResult
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- kicks off an async Gemini call on mount
+      startInterview();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;

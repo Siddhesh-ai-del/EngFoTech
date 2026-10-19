@@ -5,7 +5,7 @@ import { analyzeResume } from '../services/geminiService';
 import { AnalysisResult } from '../types';
 import { PageNavigation } from './PageNavigation';
 
-export const ResumeAnalyzer: React.FC<{ analysis: AnalysisResult }> = ({ analysis }) => {
+export const ResumeAnalyzer: React.FC<{ analysis: AnalysisResult }> = () => {
   const [text, setText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<any>(null);
