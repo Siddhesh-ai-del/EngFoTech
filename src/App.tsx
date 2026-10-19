@@ -11,8 +11,24 @@ import { UserProfile, AnalysisResult } from './types';
 import { generateCareerAnalysis } from './services/geminiService';
 import { LogIn, Sparkles } from 'lucide-react';
 
+// Lazy useState initializer: restores the saved session without an effect
+// (so nothing setState's during mount) and clears a corrupt entry instead of
+// white-screening on boot.
+function readSavedUser(): any {
+  try {
+    const saved = localStorage.getItem('user');
+    if (!saved) return null;
+    const parsed = JSON.parse(saved);
+    if (typeof parsed?.id !== 'number') throw new Error('Malformed saved user');
+    return parsed;
+  } catch {
+    localStorage.removeItem('user');
+    return null;
+  }
+}
+
 export default function App() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(readSavedUser);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -22,41 +38,11 @@ export default function App() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [authError, setAuthError] = useState('');
 
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
-        const user = event.data.user;
-        setUser(user);
-        localStorage.setItem('user', JSON.stringify(user));
-        fetchProfile(user.id);
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      setUser(parsedUser);
-      fetchProfile(parsedUser.id);
-    }
-  }, []);
-
-  const fetchProfile = async (userId: number) => {
-    try {
-      const res = await fetch(`/api/profile/${userId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setProfile(data);
-        fetchRoadmap(userId);
-      } else if (res.status === 401) {
-        handleLogout();
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  const handleLogout = () => {
+    setUser(null);
+    setProfile(null);
+    setAnalysis(null);
+    localStorage.removeItem('user');
   };
 
   const fetchRoadmap = async (userId: number) => {
@@ -73,6 +59,41 @@ export default function App() {
     }
   };
 
+  const fetchProfile = async (userId: number) => {
+    try {
+      const res = await fetch(`/api/profile/${userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+        fetchRoadmap(userId);
+      } else if (res.status === 401) {
+        handleLogout();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
+        const user = event.data.user;
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Runs on restore-from-storage and on every login; fetchProfile handles the rest.
+  useEffect(() => {
+    if (user?.id !== undefined)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchProfile awaits the network before touching state
+      fetchProfile(user.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authEmail || !authPassword) return;
@@ -88,7 +109,6 @@ export default function App() {
       if (res.ok) {
         setUser(data.user);
         localStorage.setItem('user', JSON.stringify(data.user));
-        fetchProfile(data.user.id);
       } else {
         setAuthError(data.error || 'Authentication failed');
       }
@@ -107,13 +127,6 @@ export default function App() {
       console.error('Google login error:', error);
       setAuthError('Failed to initialize Google login');
     }
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setProfile(null);
-    setAnalysis(null);
-    localStorage.removeItem('user');
   };
 
   const handleOnboardingSubmit = async (onboardingData: Omit<UserProfile, 'userId'>) => {

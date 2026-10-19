@@ -85,14 +85,14 @@ const CollapsibleAdvice: React.FC<{ title: string; content: string; icon: React.
 
 export const Dashboard: React.FC<DashboardProps> = ({ analysis }) => {
   const navigate = useNavigate();
-  const { targetJobs, recommendedSkills, strategicAdvice, strategicMetrics, marketInsights } = analysis;
+  const { targetJobs, recommendedSkills, strategicAdvice, strategicMetrics } = analysis;
 
   const chartData = [
-    { subject: 'Skills', value: strategicMetrics?.skills || 85, fullMark: 100, hint: 'Technical & Soft Skills' },
-    { subject: 'Interests', value: strategicMetrics?.interests || 80, fullMark: 100, hint: 'Passion & Curiosity' },
-    { subject: 'Academia', value: strategicMetrics?.academicPerformance || 75, fullMark: 100, hint: 'CGPA & Coursework' },
-    { subject: 'Strategy', value: strategicMetrics?.strategy || 70, fullMark: 100, hint: 'Career Planning' },
-    { subject: 'Demand', value: strategicMetrics?.marketDemand || 90, fullMark: 100, hint: 'Job Market Growth' },
+    { subject: 'Skills', value: strategicMetrics?.skills ?? 85, fullMark: 100, hint: 'Technical & Soft Skills' },
+    { subject: 'Interests', value: strategicMetrics?.interests ?? 80, fullMark: 100, hint: 'Passion & Curiosity' },
+    { subject: 'Academia', value: strategicMetrics?.academicPerformance ?? 75, fullMark: 100, hint: 'CGPA & Coursework' },
+    { subject: 'Strategy', value: strategicMetrics?.strategy ?? 70, fullMark: 100, hint: 'Career Planning' },
+    { subject: 'Demand', value: strategicMetrics?.marketDemand ?? 90, fullMark: 100, hint: 'Job Market Growth' },
   ];
   const getJobIcon = (role: string) => {
     const lowerRole = role.toLowerCase();
