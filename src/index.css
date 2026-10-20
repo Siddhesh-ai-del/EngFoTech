@@ -1,40 +1,243 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --color-dark-blue: #0f172a;
-  --color-dark-blue-hover: #1e293b;
-  --color-chart-text: #0f172a;
-  --color-off-white: #fdfdfd;
+/* ──────────────────────────────────────────────────────────────────────────
+   EngFoTech design tokens — Apple HIG-inspired semantic layer.
+
+   Two layers, two rules (liquid-glass.md › The two layers):
+   - Content layer (cards, rows, text): opaque surfaces, never glass.
+   - Functional layer (nav bar, floating controls): the only glass.
+
+   Every color is role-named and defined as a light/dark pair; `.dark`
+   swaps the pair, so no component hard-codes a hue.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* System font stack — real SF on Apple devices, OS UI font elsewhere.
+     One family for the whole app (typography.md › Conveying hierarchy). */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  /* Surfaces */
+  --color-canvas: var(--lab-canvas);
+  --color-surface: var(--lab-surface);
+  --color-inset: var(--lab-inset);
+
+  /* Text roles (dark-mode.md › Text) */
+  --color-label: var(--lab-label);
+  --color-label-2: var(--lab-label-2);
+  --color-label-3: var(--lab-label-3);
+  --color-separator: var(--lab-separator);
+
+  /* Accent + semantics. `accent` is for text/icons/selected states,
+     `accent-fill` for filled buttons — tuned so white-on-fill keeps ≥4.5:1. */
+  --color-accent: var(--lab-accent);
+  --color-accent-fill: var(--lab-accent-fill);
+  --color-green: var(--lab-green);
+  --color-green-text: var(--lab-green-text);
+  --color-orange: var(--lab-orange);
+  --color-orange-text: var(--lab-orange-text);
+  --color-red: var(--lab-red);
+  --color-red-text: var(--lab-red-text);
+
+  /* Functional layer only */
+  --color-glass: var(--lab-glass);
+  --color-glass-line: var(--lab-glass-line);
+
+  /* Legacy aliases: let any not-yet-migrated class resolve to the new roles
+     instead of silently rendering unstyled. Remove after the UI migration. */
+  --color-dark-blue: var(--lab-label);
+  --color-off-white: var(--lab-canvas);
+  --color-chart-text: var(--lab-label);
+
+  /* Depth (cards only in light mode; dark mode uses hairline borders) */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.05);
+  --shadow-pop: 0 2px 6px rgb(0 0 0 / 0.08), 0 18px 40px rgb(0 0 0 / 0.12);
+
+  /* Apple-ish standard easing for control transitions */
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+:root {
+  color-scheme: light;
+  /* iOS light semantic palette */
+  --lab-canvas: #f2f2f7; /* systemGray6 */
+  --lab-surface: #ffffff;
+  --lab-inset: #f2f2f7;
+  --lab-label: #1c1c1e;
+  --lab-label-2: #636366; /* 5.4:1 on white */
+  --lab-label-3: #8e8e93; /* decorative / tertiary only */
+  --lab-separator: rgb(60 60 67 / 0.18);
+  --lab-accent: #007aff; /* systemBlue — text, icons, selection */
+  --lab-accent-fill: #0071e3; /* filled buttons; white text = 4.7:1 */
+  --lab-green: #34c759;
+  --lab-green-text: #248a3d;
+  --lab-orange: #ff9500;
+  --lab-orange-text: #a85400;
+  --lab-red: #ff3b30;
+  --lab-red-text: #d70015;
+  --lab-glass: rgb(251 251 253 / 0.72);
+  --lab-glass-line: #d2d2d7;
+}
+
+.dark {
+  color-scheme: dark;
+  /* iOS dark semantic palette — darker, not inverted (dark-mode.md) */
+  --lab-canvas: #000000;
+  --lab-surface: #1c1c1e; /* elevated surfaces use #2c2c2e */
+  --lab-inset: #2c2c2e;
+  --lab-label: #f5f5f7;
+  --lab-label-2: #98989f; /* ~6.5:1 on surface */
+  --lab-label-3: #636366;
+  --lab-separator: rgb(84 84 88 / 0.6);
+  --lab-accent: #0a84ff;
+  --lab-accent-fill: #0066d6; /* white text = 5.4:1 */
+  --lab-green: #30d158;
+  --lab-green-text: #32d74b;
+  --lab-orange: #ff9f0a;
+  --lab-orange-text: #ffb340;
+  --lab-red: #ff453a;
+  --lab-red-text: #ff6961;
+  --lab-glass: rgb(22 22 24 / 0.72);
+  --lab-glass-line: rgb(255 255 255 / 0.12);
 }
 
 @layer base {
-  .dark {
-    --color-chart-text: #f8fafc;
-  }
   body {
-    @apply bg-off-white text-dark-blue dark:bg-slate-950 dark:text-slate-50 min-h-screen selection:bg-dark-blue selection:text-white antialiased transition-colors duration-300;
+    @apply bg-canvas text-label min-h-screen antialiased;
+    transition:
+      background-color 250ms var(--ease-standard),
+      color 250ms var(--ease-standard);
+  }
+
+  ::selection {
+    background: var(--lab-accent);
+    color: #fff;
+  }
+
+  /* One global focus treatment — 2px accent ring, offset so it never
+     collides with the control's own border (WCAG 2.4.7 / 2.4.13). */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--lab-accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Placeholder text must stay readable — tertiary gray, not decorative. */
+  ::placeholder {
+    color: var(--lab-label-2);
+    opacity: 1;
+  }
+
+  /* Motion is optional (motion.md › Make motion optional): collapse all
+     animation for people who asked the OS to reduce it. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-@utility glass {
-  @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/60 shadow-[0_4px_20px_rgb(0,0,0,0.01)];
+/* ── Component recipes ───────────────────────────────────────────────────── */
+
+/* Content layer: opaque grouped-content card. 12px continuous-ish radius. */
+@utility card {
+  @apply bg-surface border border-separator rounded-xl transition-shadow duration-200;
+  box-shadow: var(--shadow-card);
+}
+.dark .card,
+.card.dark {
+  box-shadow: none;
 }
 
-@utility glass-card {
-  @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.5rem] p-5 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] dark:hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] hover:border-slate-300 dark:hover:border-slate-700;
+/* Inset fill for rows/fields sitting on a card (iOS grouped-content). */
+@utility inset {
+  @apply bg-inset border border-separator rounded-[10px];
+}
+
+/* Buttons: capsule, sentence case, ≥44px hit target, press state, one
+   prominent fill per view (buttons.md › Style / Best practices). */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full text-[15px]
+    font-semibold select-none whitespace-nowrap
+    transition-all duration-150 ease-standard
+    active:scale-[0.98]
+    disabled:opacity-40 disabled:pointer-events-none;
+  min-height: 44px;
+  padding-inline: 20px;
 }
 
 @utility btn-primary {
-  @apply px-6 py-3 bg-dark-blue dark:bg-slate-50 hover:bg-dark-blue-hover dark:hover:bg-white text-white dark:text-dark-blue rounded-xl font-black transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none shadow-md hover:shadow-lg uppercase tracking-widest text-[10px];
+  @apply btn bg-accent-fill text-white hover:brightness-[1.08] active:brightness-95;
 }
 
 @utility btn-secondary {
-  @apply px-6 py-3 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-dark-blue dark:text-slate-50 rounded-xl font-black transition-all active:scale-95 border border-slate-200 dark:border-slate-800 uppercase tracking-widest text-[10px];
+  @apply btn bg-inset text-label hover:brightness-[0.97] dark:hover:brightness-125;
 }
 
-@utility input-field {
-  @apply w-full px-5 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-dark-blue/5 dark:focus:ring-white/5 focus:border-dark-blue dark:focus:border-white transition-all text-dark-blue dark:text-slate-50 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium text-sm;
+/* Tertiary/text action — no fill, keeps the accent for links & selection. */
+@utility btn-ghost {
+  @apply btn bg-transparent text-accent px-4 hover:bg-inset;
+}
+
+/* Square icon control (theme toggle, send, etc.) — 44px target, no fill. */
+@utility btn-icon {
+  @apply inline-flex items-center justify-center rounded-full
+    text-label-2 hover:text-label hover:bg-inset
+    transition-all duration-150 active:scale-95;
+  width: 44px;
+  height: 44px;
+}
+
+/* Text field: inset fill, 10px radius, focus handled by the global ring. */
+@utility field {
+  @apply w-full bg-inset text-label rounded-[10px] border border-transparent
+    px-4 text-[15px] font-normal
+    transition-colors duration-150
+    focus:outline-none focus:border-accent focus:bg-surface;
+  min-height: 44px;
+}
+
+/* Field label: sentence case, 13px medium, secondary label role. */
+@utility field-label {
+  @apply block text-[13px] font-medium text-label-2 mb-1.5;
+}
+
+/* Capsule chip/tag for statuses, skills, companies. */
+@utility chip {
+  @apply inline-flex items-center gap-1.5 rounded-full bg-inset
+    px-3 py-1 text-[13px] font-medium text-label-2;
+}
+
+/* Functional layer: the only glass in the app. Apple web nav recipe —
+   translucent fill, saturation boost, 20px blur, hairline edge (liquid-glass.md
+   › Cross-platform translation). */
+@utility glass-bar {
+  background: var(--lab-glass);
+  -webkit-backdrop-filter: saturate(1.8) blur(20px);
+  backdrop-filter: saturate(1.8) blur(20px);
+  border-bottom: 1px solid var(--lab-glass-line);
+}
+
+/* Segmented control (iOS signature): inset track, sliding pill handled in JSX. */
+@utility segmented {
+  @apply inline-flex bg-inset rounded-[10px] p-1 gap-1;
+}
+
+@utility segmented-option {
+  @apply relative rounded-lg px-4 py-2 text-[14px] font-medium text-label-2
+    transition-colors duration-150 cursor-pointer select-none
+    hover:text-label;
+}
+
+@utility segmented-option-active {
+  @apply bg-surface text-label;
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.1),
+    0 1px 1px rgb(0 0 0 / 0.04);
 }

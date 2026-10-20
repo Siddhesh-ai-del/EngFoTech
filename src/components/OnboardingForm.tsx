@@ -1,8 +1,39 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, Sparkles, FolderGit2, Plus, X, FileCode2, Terminal, Code2, Github, Figma, Box, PenTool, Server, Globe, Layout, Search, Settings, Laptop, Landmark, Factory, Rocket, Microscope, GraduationCap, Briefcase, CheckCircle2, IndianRupee, ChevronDown, Building } from 'lucide-react';
+import {
+  ChevronRight,
+  ChevronLeft,
+  Sparkles,
+  FolderGit2,
+  Plus,
+  X,
+  FileCode2,
+  Terminal,
+  Code2,
+  Github,
+  Figma,
+  Box,
+  PenTool,
+  Server,
+  Globe,
+  Layout,
+  Search,
+  Settings,
+  Laptop,
+  Landmark,
+  Factory,
+  Rocket,
+  Microscope,
+  GraduationCap,
+  Briefcase,
+  CheckCircle2,
+  IndianRupee,
+  ChevronDown,
+} from 'lucide-react';
 import { BRANCHES, YEARS, TIERS, CAREER_INTERESTS } from '../constants';
 import { UserProfile } from '../types';
+import { Button } from './ui/Button';
+import { Field } from './ui/Field';
 
 interface OnboardingFormProps {
   onSubmit: (profile: Omit<UserProfile, 'userId'>) => void;
@@ -36,25 +67,25 @@ const POPULAR_TOOLS = [
 ];
 
 const INTEREST_ICONS: Record<string, any> = {
-  "Core Engineering": Settings,
-  "IT / Software": Laptop,
-  "Government Jobs": Landmark,
-  "PSU": Factory,
-  "Startup": Rocket,
-  "Research": Microscope,
-  "Higher Studies": GraduationCap,
-  "Business / Entrepreneurship": Briefcase
+  'Core Engineering': Settings,
+  'IT / Software': Laptop,
+  'Government Jobs': Landmark,
+  PSU: Factory,
+  Startup: Rocket,
+  Research: Microscope,
+  'Higher Studies': GraduationCap,
+  'Business / Entrepreneurship': Briefcase,
 };
 
 export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubmitting }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<UserProfile>>({
-    university: "",
-    college: "",
-    branch: "Computer Engineering",
-    year: "1st",
-    cgpa: "",
-    tier: "Tier 1",
+    university: '',
+    college: '',
+    branch: 'Computer Engineering',
+    year: '1st',
+    cgpa: '',
+    tier: 'Tier 1',
     skills: {
       languages: [],
       tools: [],
@@ -67,7 +98,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
       financialPressure: false,
       immediateJob: false,
       relocation: true,
-      higherStudiesBudget: "Low",
+      higherStudiesBudget: 'Low',
     },
   });
 
@@ -77,11 +108,11 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showToolDropdown, setShowToolDropdown] = useState(false);
 
-  const nextStep = () => setStep(s => Math.min(s + 1, 4));
-  const prevStep = () => setStep(s => Math.max(s - 1, 1));
+  const nextStep = () => setStep((s) => Math.min(s + 1, 4));
+  const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
   const updateFormData = (data: any) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    setFormData((prev) => ({ ...prev, ...data }));
   };
 
   const handleAddLanguage = (lang: string) => {
@@ -96,7 +127,9 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
 
   const handleRemoveLanguage = (lang: string) => {
     const current = formData.skills?.languages || [];
-    updateFormData({ skills: { ...formData.skills, languages: current.filter(l => l !== lang) } });
+    updateFormData({
+      skills: { ...formData.skills, languages: current.filter((l) => l !== lang) },
+    });
   };
 
   const handleAddTool = (tool: string) => {
@@ -111,7 +144,7 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
 
   const handleRemoveTool = (tool: string) => {
     const current = formData.skills?.tools || [];
-    updateFormData({ skills: { ...formData.skills, tools: current.filter(t => t !== tool) } });
+    updateFormData({ skills: { ...formData.skills, tools: current.filter((t) => t !== tool) } });
   };
 
   const handleAddProject = (e: React.MouseEvent) => {
@@ -124,13 +157,15 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
 
   const handleRemoveProject = (index: number) => {
     const current = formData.skills?.projects || [];
-    updateFormData({ skills: { ...formData.skills, projects: current.filter((_, i) => i !== index) } });
+    updateFormData({
+      skills: { ...formData.skills, projects: current.filter((_, i) => i !== index) },
+    });
   };
 
   const toggleInterest = (interest: string) => {
     const interests = [...(formData.interests || [])];
     if (interests.includes(interest)) {
-      updateFormData({ interests: interests.filter(i => i !== interest) });
+      updateFormData({ interests: interests.filter((i) => i !== interest) });
     } else {
       updateFormData({ interests: [...interests, interest] });
     }
@@ -145,159 +180,199 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-10">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2 flex-1 mr-8">
-            {STEPS.map(s => (
-              <div key={s.id} className="flex-1 relative">
-                <div 
-                  className={`h-1.5 rounded-full transition-all duration-500 ${
-                    s.id <= step ? 'bg-black' : 'bg-slate-100'
-                  }`}
-                />
-              </div>
+      <div className="mb-8">
+        <div className="flex items-center gap-6">
+          {/* Decorative — the "Step N of 4" text below is the real status. */}
+          <div className="flex gap-1.5 flex-1" aria-hidden="true">
+            {STEPS.map((s) => (
+              <div
+                key={s.id}
+                className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                  s.id <= step ? 'bg-accent-fill' : 'bg-separator'
+                }`}
+              />
             ))}
           </div>
-          <span className="text-xs font-black text-black whitespace-nowrap uppercase tracking-widest">Step {step} of 4</span>
+          <span className="text-[13px] font-medium text-label-2 whitespace-nowrap">
+            Step {step} of 4
+          </span>
         </div>
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="bg-white border border-slate-200 rounded-[2.5rem] p-8 md:p-12 shadow-sm"
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="card p-6 md:p-8"
         >
           {step === 1 && (
-            <div className="space-y-10">
+            <div className="space-y-8">
               <div>
-                <h2 className="text-3xl font-black text-black tracking-tight">Skills & Experience</h2>
-                <p className="text-black/70 mt-2 font-medium">Tell us about your academic background and technical skills.</p>
+                <h2 className="text-[22px] font-semibold tracking-[-0.01em] text-label">
+                  Skills & Experience
+                </h2>
+                <p className="text-[15px] text-label-2 mt-2">
+                  Tell us about your academic background and technical skills.
+                </p>
               </div>
-              
+
               <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">University Name</label>
-                    <div className="relative">
-                      <Building size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40" />
-                      <input 
-                        type="text" 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-black font-medium focus:outline-none focus:border-black focus:bg-white transition-all" 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <Field label="University name">
+                    {(p) => (
+                      <input
+                        {...p}
+                        type="text"
+                        className="field"
                         placeholder="e.g. University of Mumbai"
                         value={formData.university}
                         onChange={(e) => updateFormData({ university: e.target.value })}
                       />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">College Name</label>
-                    <div className="relative">
-                      <GraduationCap size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40" />
-                      <input 
-                        type="text" 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-4 text-black font-medium focus:outline-none focus:border-black focus:bg-white transition-all" 
+                    )}
+                  </Field>
+                  <Field label="College name">
+                    {(p) => (
+                      <input
+                        {...p}
+                        type="text"
+                        className="field"
                         placeholder="e.g. VJTI, DJ Sanghvi"
                         value={formData.college}
                         onChange={(e) => updateFormData({ college: e.target.value })}
                       />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">Engineering Branch</label>
-                    <div className="relative">
-                      <Settings size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/40" />
-                      <select 
-                        className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-10 py-4 text-black font-medium focus:outline-none focus:border-black focus:bg-white transition-all cursor-pointer"
-                        value={formData.branch}
-                        onChange={(e) => updateFormData({ branch: e.target.value })}
-                      >
-                        {BRANCHES.map(b => <option key={b} value={b}>{b}</option>)}
-                      </select>
-                      <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 pointer-events-none" />
-                    </div>
-                  </div>
+                    )}
+                  </Field>
+                  <Field label="Engineering branch">
+                    {(p) => (
+                      <div className="relative">
+                        <select
+                          {...p}
+                          className="field appearance-none cursor-pointer pr-10"
+                          value={formData.branch}
+                          onChange={(e) => updateFormData({ branch: e.target.value })}
+                        >
+                          {BRANCHES.map((b) => (
+                            <option key={b} value={b}>
+                              {b}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown
+                          size={16}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-label-2 pointer-events-none"
+                        />
+                      </div>
+                    )}
+                  </Field>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">Year</label>
-                      <div className="relative">
-                        <select 
-                          className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-black font-medium focus:outline-none focus:border-black focus:bg-white transition-all cursor-pointer"
-                          value={formData.year}
-                          onChange={(e) => updateFormData({ year: e.target.value })}
-                        >
-                          {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
-                        <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 pointer-events-none" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">Tier</label>
-                      <div className="relative">
-                        <select 
-                          className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-black font-medium focus:outline-none focus:border-black focus:bg-white transition-all cursor-pointer"
-                          value={formData.tier}
-                          onChange={(e) => updateFormData({ tier: e.target.value })}
-                        >
-                          {TIERS.map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                        <ChevronDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-black/40 pointer-events-none" />
-                      </div>
-                    </div>
+                    <Field label="Year">
+                      {(p) => (
+                        <div className="relative">
+                          <select
+                            {...p}
+                            className="field appearance-none cursor-pointer pr-10"
+                            value={formData.year}
+                            onChange={(e) => updateFormData({ year: e.target.value })}
+                          >
+                            {YEARS.map((y) => (
+                              <option key={y} value={y}>
+                                {y}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown
+                            size={16}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-label-2 pointer-events-none"
+                          />
+                        </div>
+                      )}
+                    </Field>
+                    <Field label="Tier">
+                      {(p) => (
+                        <div className="relative">
+                          <select
+                            {...p}
+                            className="field appearance-none cursor-pointer pr-10"
+                            value={formData.tier}
+                            onChange={(e) => updateFormData({ tier: e.target.value })}
+                          >
+                            {TIERS.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown
+                            size={16}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-label-2 pointer-events-none"
+                          />
+                        </div>
+                      )}
+                    </Field>
                   </div>
                 </div>
 
-                <div className="space-y-6 pt-4">
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">Programming Languages</label>
+                <div className="space-y-5 pt-2">
+                  <div className="space-y-2.5">
+                    <p className="field-label">Programming languages</p>
                     <div className="flex flex-wrap items-center gap-2">
                       <AnimatePresence>
-                        {formData.skills?.languages?.map(lang => (
-                          <motion.span 
-                            key={lang} 
-                            initial={{ scale: 0.8, opacity: 0 }} 
-                            animate={{ scale: 1, opacity: 1 }} 
-                            exit={{ scale: 0.8, opacity: 0 }} 
-                            className="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold flex items-center gap-2 group"
+                        {formData.skills?.languages?.map((lang) => (
+                          <motion.span
+                            key={lang}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="chip pr-1.5"
                           >
                             {lang}
-                            <button type="button" onClick={() => handleRemoveLanguage(lang)} className="text-white/50 hover:text-white transition-colors">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveLanguage(lang)}
+                              aria-label={`Remove ${lang}`}
+                              className="text-label-2 hover:text-red-text transition-colors p-0.5 rounded-full"
+                            >
                               <X size={14} />
                             </button>
                           </motion.span>
                         ))}
                       </AnimatePresence>
-                      
+
                       <div className="relative">
-                        <button 
-                          type="button" 
+                        <Button
+                          variant="ghost"
                           onClick={() => {
                             setShowLangDropdown(!showLangDropdown);
                             if (!showLangDropdown) setShowToolDropdown(false);
-                          }} 
-                          className="px-4 py-2 bg-slate-50 border border-slate-200 text-black rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-slate-100 transition-colors"
+                          }}
                         >
-                          <Plus size={14} /> Add Language
-                        </button>
-                        
+                          <Plus size={16} /> Add Language
+                        </Button>
+
                         <AnimatePresence>
                           {showLangDropdown && (
-                            <motion.div 
-                              initial={{ opacity: 0, y: 10 }}
+                            <motion.div
+                              initial={{ opacity: 0, y: 6 }}
                               animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 10 }}
-                              className="absolute top-full left-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 overflow-hidden"
+                              exit={{ opacity: 0, y: 6 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute top-full left-0 mt-2 w-72 bg-surface border border-separator rounded-xl shadow-pop z-20 overflow-hidden"
                             >
-                              <div className="p-3 border-b border-slate-100">
-                                <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2 border border-slate-200 focus-within:border-black transition-colors">
-                                  <Search size={14} className="text-black/40" />
-                                  <input 
+                              <div className="p-3 border-b border-separator">
+                                <div className="relative">
+                                  <Search
+                                    size={16}
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-label-2 pointer-events-none"
+                                  />
+                                  <input
                                     type="text"
                                     autoFocus
-                                    className="bg-transparent border-none outline-none text-xs text-black placeholder:text-black/40 w-full font-medium"
+                                    aria-label="Search languages"
+                                    className="field pl-9 text-[14px]"
                                     placeholder="Search or add custom..."
                                     value={langInput}
                                     onChange={(e) => setLangInput(e.target.value)}
@@ -311,14 +386,16 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
                                 </div>
                               </div>
                               <div className="p-2 max-h-60 overflow-y-auto">
-                                {POPULAR_LANGUAGES.filter(l => l.name.toLowerCase().includes(langInput.toLowerCase())).map(lang => (
+                                {POPULAR_LANGUAGES.filter((l) =>
+                                  l.name.toLowerCase().includes(langInput.toLowerCase()),
+                                ).map((lang) => (
                                   <button
                                     key={lang.name}
                                     type="button"
                                     onClick={() => handleAddLanguage(lang.name)}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-black/60 hover:bg-slate-50 hover:text-black rounded-xl transition-colors text-left"
+                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-[10px] text-[14px] text-label hover:bg-inset transition-colors text-left"
                                   >
-                                    <lang.icon size={16} className="text-black/40" />
+                                    <lang.icon size={16} className="text-label-2" />
                                     {lang.name}
                                   </button>
                                 ))}
@@ -330,20 +407,26 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <label className="text-[10px] font-bold text-black/50 uppercase tracking-widest ml-1">Tools & Software</label>
+                  <div className="space-y-2.5">
+                    <p className="field-label">Tools & software</p>
                     <div className="flex flex-wrap items-center gap-2">
                       <AnimatePresence>
-                        {formData.skills?.tools?.map(tool => (
-                          <motion.span 
-                            key={tool} 
-                            initial={{ scale: 0.8, opacity: 0 }} 
-                            animate={{ scale: 1, opacity: 1 }} 
-                            exit={{ scale: 0.8, opacity: 0 }} 
-                            className="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold flex items-center gap-2 group"
+                        {formData.skills?.tools?.map((tool) => (
+                          <motion.span
+                            key={tool}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="chip pr-1.5"
                           >
                             {tool}
-                            <button type="button" onClick={() => handleRemoveTool(tool)} className="text-white/50 hover:text-white transition-colors">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTool(tool)}
+                              aria-label={`Remove ${tool}`}
+                              className="text-label-2 hover:text-red-text transition-colors p-0.5 rounded-full"
+                            >
                               <X size={14} />
                             </button>
                           </motion.span>
@@ -351,32 +434,36 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
                       </AnimatePresence>
 
                       <div className="relative">
-                        <button 
-                          type="button" 
+                        <Button
+                          variant="ghost"
                           onClick={() => {
                             setShowToolDropdown(!showToolDropdown);
                             if (!showToolDropdown) setShowLangDropdown(false);
-                          }} 
-                          className="px-4 py-2 bg-slate-50 border border-slate-200 text-black rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-slate-100 transition-colors"
+                          }}
                         >
-                          <Plus size={14} /> Add Tool
-                        </button>
+                          <Plus size={16} /> Add Tool
+                        </Button>
 
                         <AnimatePresence>
                           {showToolDropdown && (
-                            <motion.div 
-                              initial={{ opacity: 0, y: 10 }}
+                            <motion.div
+                              initial={{ opacity: 0, y: 6 }}
                               animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: 10 }}
-                              className="absolute top-full left-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 overflow-hidden"
+                              exit={{ opacity: 0, y: 6 }}
+                              transition={{ duration: 0.15 }}
+                              className="absolute top-full left-0 mt-2 w-72 bg-surface border border-separator rounded-xl shadow-pop z-20 overflow-hidden"
                             >
-                              <div className="p-3 border-b border-slate-100">
-                                <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2 border border-slate-200 focus-within:border-black transition-colors">
-                                  <Search size={14} className="text-black/40" />
-                                  <input 
+                              <div className="p-3 border-b border-separator">
+                                <div className="relative">
+                                  <Search
+                                    size={16}
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-label-2 pointer-events-none"
+                                  />
+                                  <input
                                     type="text"
                                     autoFocus
-                                    className="bg-transparent border-none outline-none text-xs text-black placeholder:text-black/40 w-full font-medium"
+                                    aria-label="Search tools"
+                                    className="field pl-9 text-[14px]"
                                     placeholder="Search or add custom..."
                                     value={toolInput}
                                     onChange={(e) => setToolInput(e.target.value)}
@@ -390,14 +477,16 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
                                 </div>
                               </div>
                               <div className="p-2 max-h-60 overflow-y-auto">
-                                {POPULAR_TOOLS.filter(t => t.name.toLowerCase().includes(toolInput.toLowerCase())).map(tool => (
+                                {POPULAR_TOOLS.filter((t) =>
+                                  t.name.toLowerCase().includes(toolInput.toLowerCase()),
+                                ).map((tool) => (
                                   <button
                                     key={tool.name}
                                     type="button"
                                     onClick={() => handleAddTool(tool.name)}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-black/60 hover:bg-slate-50 hover:text-black rounded-xl transition-colors text-left"
+                                    className="w-full flex items-center gap-3 px-3 py-2 rounded-[10px] text-[14px] text-label hover:bg-inset transition-colors text-left"
                                   >
-                                    <tool.icon size={16} className="text-black/40" />
+                                    <tool.icon size={16} className="text-label-2" />
                                     {tool.name}
                                   </button>
                                 ))}
@@ -410,55 +499,63 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
                   </div>
                 </div>
 
-                <div className="space-y-6 pt-4">
-                  <h3 className="text-lg font-bold text-black flex items-center gap-2">
-                    <FolderGit2 size={20} className="text-black/40" />
+                <div className="space-y-4 pt-2">
+                  <h3 className="text-[20px] font-semibold text-label flex items-center gap-2">
+                    <FolderGit2 size={18} className="text-label-2" />
                     Projects
                   </h3>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-6 space-y-4">
-                      <input 
-                        type="text" 
-                        className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-black font-medium focus:outline-none focus:border-black transition-all" 
+
+                  <div className="space-y-3">
+                    <div className="bg-surface border border-separator rounded-xl p-4 space-y-3">
+                      <input
+                        type="text"
+                        aria-label="Project title"
+                        className="field"
                         placeholder="Project Title"
                         value={projectInput.title}
-                        onChange={(e) => setProjectInput(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setProjectInput((prev) => ({ ...prev, title: e.target.value }))
+                        }
                       />
-                      <textarea 
-                        className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-black font-medium focus:outline-none focus:border-black transition-all min-h-[100px] resize-none" 
+                      <textarea
+                        aria-label="Project description"
+                        className="field py-3 min-h-[112px] resize-none leading-relaxed"
                         placeholder="Short description of what you built and technologies used..."
                         value={projectInput.description}
-                        onChange={(e) => setProjectInput(prev => ({ ...prev, description: e.target.value }))}
+                        onChange={(e) =>
+                          setProjectInput((prev) => ({ ...prev, description: e.target.value }))
+                        }
                       />
-                      <button 
-                        type="button" 
-                        onClick={handleAddProject} 
-                        className="w-full py-3 bg-black text-white rounded-2xl font-black text-sm transition-all hover:bg-slate-900 flex items-center justify-center gap-2"
-                      >
+                      <Button variant="secondary" className="w-full" onClick={handleAddProject}>
                         <Plus size={18} /> Add Project
-                      </button>
+                      </Button>
                     </div>
 
                     <div className="space-y-3">
                       <AnimatePresence>
                         {formData.skills?.projects?.map((proj: any, idx) => (
-                          <motion.div 
-                            key={idx} 
-                            initial={{ opacity: 0, y: 10 }}
+                          <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white border border-slate-200 rounded-2xl p-5 relative group hover:border-black transition-colors"
+                            exit={{ opacity: 0, scale: 0.97 }}
+                            transition={{ duration: 0.15 }}
+                            className="bg-surface border border-separator rounded-xl p-4 relative group hover:border-label-3/50 transition-colors"
                           >
-                            <button 
+                            <button
                               type="button"
-                              onClick={() => handleRemoveProject(idx)} 
-                              className="absolute top-4 right-4 text-black/40 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => handleRemoveProject(idx)}
+                              aria-label={`Remove project ${proj.title}`}
+                              className="absolute top-3 right-3 text-label-2 hover:text-red-text opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1.5 rounded-full"
                             >
-                              <X size={18} />
+                              <X size={16} />
                             </button>
-                            <h4 className="font-bold text-black pr-8">{proj.title}</h4>
-                            <p className="text-sm text-black/60 mt-2 leading-relaxed font-medium">{proj.description}</p>
+                            <h4 className="text-[15px] font-semibold text-label pr-8">
+                              {proj.title}
+                            </h4>
+                            <p className="text-[14px] text-label-2 mt-1.5 leading-relaxed">
+                              {proj.description}
+                            </p>
                           </motion.div>
                         ))}
                       </AnimatePresence>
@@ -470,46 +567,48 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
           )}
 
           {step === 2 && (
-            <div className="space-y-10">
+            <div className="space-y-8">
               <div>
-                <h2 className="text-3xl font-black text-black tracking-tight">Career Interests</h2>
-                <p className="text-black/60 mt-2 font-medium">Select the career paths you are interested in.</p>
+                <h2 className="text-[22px] font-semibold tracking-[-0.01em] text-label">
+                  Career Interests
+                </h2>
+                <p className="text-[15px] text-label-2 mt-2">
+                  Select the career paths you are interested in.
+                </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {CAREER_INTERESTS.map(interest => {
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {CAREER_INTERESTS.map((interest) => {
                   const Icon = INTEREST_ICONS[interest] || Sparkles;
                   const isSelected = formData.interests?.includes(interest);
                   return (
                     <button
                       key={interest}
                       onClick={() => toggleInterest(interest)}
-                      className={`relative p-6 rounded-[2rem] border text-left transition-all duration-300 flex flex-col gap-4 group ${
+                      aria-pressed={!!isSelected}
+                      className={`relative p-4 rounded-xl border text-left transition-colors duration-200 flex items-center gap-3.5 ${
                         isSelected
-                          ? 'bg-black border-black shadow-xl scale-[1.02]'
-                          : 'bg-slate-50 border-slate-200 hover:border-black hover:bg-white'
+                          ? 'bg-accent/10 border-accent/30'
+                          : 'bg-surface border-separator hover:bg-inset/60'
                       }`}
                     >
-                      <div className="flex justify-between items-start w-full">
-                        <div className={`p-3 rounded-2xl transition-colors ${
-                          isSelected ? 'bg-white/10 text-white' : 'bg-white text-black/40 group-hover:text-black'
-                        }`}>
-                          <Icon size={24} />
-                        </div>
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="text-white"
-                          >
-                            <CheckCircle2 size={24} />
-                          </motion.div>
-                        )}
-                      </div>
-                      <span className={`font-black tracking-tight transition-colors ${
-                        isSelected ? 'text-white' : 'text-black/60 group-hover:text-black'
-                      }`}>
+                      <span
+                        className={`p-2 rounded-[10px] shrink-0 ${isSelected ? 'bg-accent/15 text-accent' : 'bg-inset text-label-2'}`}
+                      >
+                        <Icon size={18} />
+                      </span>
+                      <span className="text-[15px] font-semibold text-label flex-1">
                         {interest}
                       </span>
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0.6, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.15 }}
+                          className="text-accent shrink-0"
+                        >
+                          <CheckCircle2 size={18} />
+                        </motion.div>
+                      )}
                     </button>
                   );
                 })}
@@ -518,131 +617,157 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
           )}
 
           {step === 3 && (
-            <div className="space-y-10">
+            <div className="space-y-8">
               <div>
-                <h2 className="text-3xl font-black text-black tracking-tight">Constraints & Preferences</h2>
-                <p className="text-black/60 mt-2 font-medium">Tell us about your personal constraints so we can recommend the best career path.</p>
+                <h2 className="text-[22px] font-semibold tracking-[-0.01em] text-label">
+                  Constraints & Preferences
+                </h2>
+                <p className="text-[15px] text-label-2 mt-2">
+                  Tell us about your personal constraints so we can recommend the best career path.
+                </p>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[
-                  { 
-                    id: 'financialPressure', 
-                    icon: IndianRupee, 
-                    title: 'Financial Pressure', 
+                  {
+                    id: 'financialPressure',
+                    icon: IndianRupee,
+                    title: 'Financial Pressure',
                     desc: 'Need to support family soon?',
-                    value: formData.constraints?.financialPressure 
+                    value: formData.constraints?.financialPressure,
                   },
-                  { 
-                    id: 'immediateJob', 
-                    icon: Briefcase, 
-                    title: 'Immediate Job Requirement', 
+                  {
+                    id: 'immediateJob',
+                    icon: Briefcase,
+                    title: 'Immediate Job Requirement',
                     desc: 'Need a job right after graduation?',
-                    value: formData.constraints?.immediateJob 
-                  }
+                    value: formData.constraints?.immediateJob,
+                  },
                 ].map((constraint) => (
-                  <div 
+                  <button
                     key={constraint.id}
-                    onClick={() => updateFormData({ constraints: { ...formData.constraints, [constraint.id]: !constraint.value } })}
-                    className={`flex items-center justify-between p-6 rounded-[2rem] border cursor-pointer transition-all duration-300 group ${
-                      constraint.value 
-                        ? 'bg-black border-black shadow-lg scale-[1.01]' 
-                        : 'bg-slate-50 border-slate-200 hover:border-black hover:bg-white'
+                    type="button"
+                    role="switch"
+                    aria-checked={!!constraint.value}
+                    onClick={() =>
+                      updateFormData({
+                        constraints: {
+                          ...formData.constraints,
+                          [constraint.id]: !constraint.value,
+                        },
+                      })
+                    }
+                    className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border cursor-pointer text-left transition-colors duration-200 ${
+                      constraint.value
+                        ? 'bg-accent/10 border-accent/30'
+                        : 'bg-surface border-separator hover:bg-inset/60'
                     }`}
                   >
-                    <div className="flex items-center gap-5">
-                      <div className={`p-4 rounded-2xl transition-colors ${
-                        constraint.value ? 'bg-white/10 text-white' : 'bg-white text-black/40 group-hover:text-black'
-                      }`}>
-                        <constraint.icon size={24} />
-                      </div>
-                      <div>
-                        <p className={`font-black tracking-tight transition-colors ${constraint.value ? 'text-white' : 'text-black'}`}>{constraint.title}</p>
-                        <p className={`text-sm font-medium transition-colors ${constraint.value ? 'text-white/60' : 'text-black/50'}`}>{constraint.desc}</p>
-                      </div>
-                    </div>
-                    <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${
-                      constraint.value ? 'bg-white/20' : 'bg-slate-200'
-                    }`}>
-                      <div className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-                        constraint.value ? 'translate-x-6' : 'translate-x-0'
-                      }`} />
-                    </div>
-                  </div>
+                    <span className="flex items-center gap-4 min-w-0">
+                      <span
+                        className={`p-2.5 rounded-[10px] shrink-0 ${constraint.value ? 'bg-accent/15 text-accent' : 'bg-inset text-label-2'}`}
+                      >
+                        <constraint.icon size={18} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[15px] font-semibold text-label">
+                          {constraint.title}
+                        </span>
+                        <span className="block text-[13px] text-label-2 mt-0.5">
+                          {constraint.desc}
+                        </span>
+                      </span>
+                    </span>
+                    {/* iOS-style switch — state is carried by aria-checked above. */}
+                    <span
+                      className={`w-11 h-6 rounded-full p-[3px] shrink-0 transition-colors duration-200 ${
+                        constraint.value ? 'bg-accent-fill' : 'bg-inset'
+                      }`}
+                    >
+                      <span
+                        className={`block w-[18px] h-[18px] bg-surface rounded-full shadow-sm transform transition-transform duration-200 ${
+                          constraint.value ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </span>
+                  </button>
                 ))}
 
-                <div className="p-6 rounded-[2rem] border bg-slate-50 border-slate-200 hover:border-black hover:bg-white transition-all duration-300 group">
-                  <div className="flex items-center gap-5 mb-6">
-                    <div className="p-4 rounded-2xl bg-white text-black/40 group-hover:text-black transition-colors">
-                      <GraduationCap size={24} />
-                    </div>
-                    <div>
-                      <p className="font-black tracking-tight text-black">Higher Studies Budget</p>
-                      <p className="text-sm font-medium text-black/50">What is your budget for further education?</p>
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <select 
-                      className="w-full appearance-none bg-white border border-slate-200 rounded-2xl px-6 py-4 text-black font-bold focus:outline-none focus:border-black transition-all cursor-pointer"
-                      value={formData.constraints?.higherStudiesBudget || "Medium"}
-                      onChange={(e) => updateFormData({ constraints: { ...formData.constraints, higherStudiesBudget: e.target.value } })}
-                    >
-                      <option value="Low">Low (Scholarships only)</option>
-                      <option value="Medium">Medium (Affordable programs)</option>
-                      <option value="High">High (Flexible budget)</option>
-                    </select>
-                    <ChevronDown size={20} className="absolute right-6 top-1/2 -translate-y-1/2 text-dark-blue/40 pointer-events-none" />
-                  </div>
+                <div className="bg-surface border border-separator rounded-xl p-4">
+                  <Field
+                    label="Higher studies budget"
+                    hint="What is your budget for further education?"
+                  >
+                    {(p) => (
+                      <div className="relative">
+                        <select
+                          {...p}
+                          className="field appearance-none cursor-pointer pr-10 font-medium"
+                          value={formData.constraints?.higherStudiesBudget || 'Medium'}
+                          onChange={(e) =>
+                            updateFormData({
+                              constraints: {
+                                ...formData.constraints,
+                                higherStudiesBudget: e.target.value,
+                              },
+                            })
+                          }
+                        >
+                          <option value="Low">Low (Scholarships only)</option>
+                          <option value="Medium">Medium (Affordable programs)</option>
+                          <option value="High">High (Flexible budget)</option>
+                        </select>
+                        <ChevronDown
+                          size={16}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-label-2 pointer-events-none"
+                        />
+                      </div>
+                    )}
+                  </Field>
                 </div>
               </div>
             </div>
           )}
 
           {step === 4 && (
-            <div className="space-y-8 text-center py-12">
-              <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
-                <Sparkles size={48} className="text-dark-blue" />
+            <div className="space-y-6 text-center py-10">
+              <div className="w-16 h-16 bg-inset rounded-full flex items-center justify-center mx-auto">
+                <Sparkles size={28} className="text-accent" />
               </div>
-              <h2 className="text-4xl font-black text-dark-blue tracking-tight">Ready to Analyze</h2>
-              <p className="text-dark-blue/60 max-w-md mx-auto font-medium text-lg">
-                EngFoTech will analyze your profile to generate a personalized career roadmap and recommendations which is perfect for you...
+              <h2 className="text-[22px] font-semibold tracking-[-0.01em] text-label">
+                Ready to Analyze
+              </h2>
+              <p className="text-[15px] text-label-2 max-w-md mx-auto leading-relaxed">
+                EngFoTech will analyze your profile to generate a personalized career roadmap and
+                recommendations which is perfect for you...
               </p>
             </div>
           )}
 
-          <div className={`mt-12 flex gap-4 ${step === 1 ? 'justify-end' : 'justify-between'}`}>
+          <div className={`mt-10 flex gap-3 ${step === 1 ? 'justify-end' : 'justify-between'}`}>
             {step > 1 && (
-              <button
-                onClick={prevStep}
-                className="px-8 py-4 rounded-2xl bg-slate-50 text-dark-blue font-bold hover:bg-slate-100 transition-all flex items-center gap-2 border border-slate-200"
-              >
-                <ChevronLeft size={20} />
+              <Button variant="secondary" onClick={prevStep}>
+                <ChevronLeft size={18} />
                 Back
-              </button>
+              </Button>
             )}
-            
+
             {step < 4 ? (
-              <button
-                onClick={nextStep}
-                className="px-8 py-4 rounded-2xl bg-dark-blue text-white font-black hover:bg-dark-blue-hover transition-all flex items-center gap-2 shadow-lg"
-              >
+              <Button variant="primary" onClick={nextStep}>
                 Next
-                <ChevronRight size={20} />
-              </button>
+                <ChevronRight size={18} />
+              </Button>
             ) : (
-              <button
+              <Button
+                variant="primary"
+                className="flex-1"
                 onClick={() => onSubmit(formData as any)}
                 disabled={isSubmitting}
-                className="flex-1 px-8 py-4 rounded-2xl bg-dark-blue text-white font-black hover:bg-dark-blue-hover transition-all flex items-center justify-center gap-3 shadow-xl disabled:opacity-50"
+                loading={isSubmitting}
+                loadingLabel="Processing…"
               >
-                {isSubmitting ? (
-                  <>Processing...</>
-                ) : (
-                  <>
-                    <Sparkles size={20} />
-                    Generate My Career Path
-                  </>
-                )}
-              </button>
+                <Sparkles size={18} />
+                Generate My Career Path
+              </Button>
             )}
           </div>
         </motion.div>

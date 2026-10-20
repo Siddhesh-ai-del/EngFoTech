@@ -101,6 +101,25 @@ There is no account system. Everything the app knows about you lives in your bro
 - The Express API in `server.ts` (auth, profile, roadmap) is **retained but no longer
   called by the UI** — it stays tested and ready for a future server-backed mode.
 
+## Design
+
+The UI follows an Apple Human Interface Guidelines-inspired visual language, adapted for
+the web:
+
+- **Semantic tokens, not raw colors.** `src/index.css` defines role-based classes
+  (`text-label`, `text-label-2`, `bg-surface`, `bg-inset`, `border-separator`,
+  `bg-accent-fill`, status colors) as light/dark pairs, so components adapt to dark mode
+  automatically instead of carrying `dark:` variants.
+- **Two surface layers.** Content sits on opaque grouped-content cards (`card`, 12px
+  radius); translucent glass (`glass-bar`) is reserved for the sticky navigation bar only.
+- **Shared primitives.** `src/components/ui/` exports `Button` (capsule, sentence case,
+  ≥44px targets, loading state), `Field` (always-associated labels), `Card` /
+  `SectionHeading`, `Tag`, and `Spinner`.
+- **System typography.** The system font stack (SF on Apple devices) with an iOS-like
+  type scale; sentence-case labels, no ultra-heavy weights.
+- **Accessibility by default.** Contrast ≥4.5:1 on all text roles, a global focus ring,
+  `aria-current` navigation, and motion collapsed under `prefers-reduced-motion`.
+
 ## Quick start
 
 **Prerequisites:** Node.js **22 or newer** (verified on 22, 24, and 26).

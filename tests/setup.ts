@@ -9,3 +9,20 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
   }
   (globalThis as any).ResizeObserver = ResizeObserverStub;
 }
+
+// jsdom lacks IntersectionObserver, which motion/react's `whileInView`
+// requires when components mount under test.
+if (typeof globalThis.IntersectionObserver === 'undefined') {
+  class IntersectionObserverStub {
+    root = null;
+    rootMargin = '';
+    thresholds = [];
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  }
+  Object.assign(globalThis, { IntersectionObserver: IntersectionObserverStub });
+}

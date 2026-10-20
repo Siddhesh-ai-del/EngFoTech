@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { RotateCcw, LayoutDashboard, FileText, MessageSquare, Compass, Moon, Sun } from 'lucide-react';
+import {
+  RotateCcw,
+  LayoutDashboard,
+  FileText,
+  MessageSquare,
+  Compass,
+  Moon,
+  Sun,
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface LayoutProps {
@@ -9,40 +17,47 @@ interface LayoutProps {
   onStartOver: () => void;
 }
 
+const navItems = [
+  { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'Roadmap', path: '/roadmap', icon: Compass },
+  { name: 'Resume Analyzer', path: '/resume', icon: FileText },
+  { name: 'Mock Interview', path: '/interview', icon: MessageSquare },
+];
+
+/** Follow the OS appearance until the visitor picks a side explicitly. */
+function initialIsDark(): boolean {
+  const stored = localStorage.getItem('theme');
+  if (stored === 'dark') return true;
+  if (stored === 'light') return false;
+  return typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+    : false;
+}
+
 export const Layout: React.FC<LayoutProps> = ({ children, onStartOver }) => {
   const location = useLocation();
-  const [isDark, setIsDark] = useState(() => {
-    return localStorage.getItem('theme') === 'dark';
-  });
+  const [isDark, setIsDark] = useState(initialIsDark);
 
   useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
     }
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { name: 'Roadmap', path: '/roadmap', icon: Compass },
-    { name: 'Resume Analyzer', path: '/resume', icon: FileText },
-    { name: 'Mock Interview', path: '/interview', icon: MessageSquare },
-  ];
-
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="flex flex-col">
-              <h1 className="text-lg font-black text-dark-blue dark:text-white tracking-tighter leading-none">
+    <div className="min-h-screen bg-canvas text-label">
+      {/* Functional layer — the app's only glass surface (liquid-glass.md). */}
+      <header className="glass-bar sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-6">
+          <div className="flex items-center gap-6 min-w-0">
+            <Link to="/" className="flex flex-col leading-none py-1">
+              <span className="text-[17px] font-semibold text-label tracking-[-0.02em]">
                 EngFoTech
-              </h1>
-              <p className="text-[7px] uppercase tracking-[0.2em] text-dark-blue dark:text-white/40 font-black mt-0.5">Engineers Forward</p>
+              </span>
+              <span className="text-[11px] text-label-2 mt-0.5">Engineers Forward</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -53,51 +68,49 @@ export const Layout: React.FC<LayoutProps> = ({ children, onStartOver }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-300 ${
-                      isActive 
-                        ? 'bg-dark-blue dark:bg-slate-50 text-white dark:text-dark-blue shadow-sm' 
-                        : 'text-dark-blue dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-dark-blue dark:hover:text-white'
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`flex items-center gap-2 px-3 h-9 rounded-[10px] text-[14px] font-medium transition-colors duration-150 ${
+                      isActive
+                        ? 'text-accent bg-inset'
+                        : 'text-label-2 hover:text-label hover:bg-inset/60'
                     }`}
                   >
-                    <Icon size={14} className={isActive ? (isDark ? 'text-dark-blue' : 'text-white') : (isDark ? 'text-slate-400' : 'text-dark-blue')} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{item.name}</span>
+                    <Icon size={16} strokeWidth={isActive ? 2.25 : 2} />
+                    <span>{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 shrink-0">
             <button
-               onClick={() => setIsDark(!isDark)}
-               className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 text-dark-blue dark:text-slate-400 hover:text-dark-blue dark:hover:text-white transition-all border border-slate-200 dark:border-slate-700 shadow-sm"
+              onClick={() => setIsDark(!isDark)}
+              className="btn-icon"
+              aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={isDark ? 'Light theme' : 'Dark theme'}
             >
-              {isDark ? <Sun size={16} /> : <Moon size={16} />}
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-
-            <div className="flex items-center gap-3 pl-4 border-l border-slate-100 dark:border-slate-800">
-              <p className="text-[7px] text-dark-blue/50 dark:text-white/30 font-medium uppercase tracking-widest hidden sm:block">
-                Saved in this browser
-              </p>
-            </div>
 
             <button
               onClick={onStartOver}
-              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all duration-300"
-              title="Start over — clears your saved profile and roadmap"
+              className="btn-icon hover:text-red-text"
+              title="Start over — clears your saved profile and roadmap from this browser"
+              aria-label="Start over"
             >
-              <RotateCcw size={16} />
+              <RotateCcw size={18} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+        {/* Brief, functional entrance only — motion.md › Aim for brevity. */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
         >
           {children}
         </motion.div>
