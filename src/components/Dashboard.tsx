@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Briefcase,
-  GraduationCap,
   Building2,
   Rocket,
   Sparkles,
@@ -13,13 +12,10 @@ import {
   LineChart,
   MessageSquare,
   Lightbulb,
-  CheckCircle2,
   Target,
   TrendingUp,
   Award,
   Database,
-  ShieldCheck,
-  Cpu,
   Globe,
   ChevronDown,
   ChevronUp
@@ -29,7 +25,6 @@ import {
   RadarChart, 
   PolarGrid, 
   PolarAngleAxis, 
-  PolarRadiusAxis, 
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
@@ -37,7 +32,6 @@ import { AnalysisResult } from '../types';
 import { CareerOpportunities } from './CareerOpportunities';
 import { PageNavigation } from './PageNavigation';
 
-import { MarketInsights } from './MarketInsights';
 import { MentorChat } from './MentorChat';
 import { SkillGapAnalyzer } from './SkillGapAnalyzer';
 import { SystemDesignPath } from './SystemDesignPath';

@@ -1,7 +1,24 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, AnalysisResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+let client: GoogleGenAI | null = null;
+
+/**
+ * The Gemini client is created on first use rather than at import time.
+ * Importing this module must never crash the app: a missing GEMINI_API_KEY
+ * used to throw during boot and white-screen the page, and tests need to be
+ * able to render components without a real key.
+ */
+function getAi(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY || "";
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not set — add it to .env.local (see .env.example).");
+  }
+  if (!client) {
+    client = new GoogleGenAI({ apiKey });
+  }
+  return client;
+}
 
 async function callGeminiWithRetry(fn: () => Promise<any>, retries = 5, delay = 2000): Promise<any> {
   try {
@@ -74,7 +91,7 @@ export async function generateCareerAnalysis(profile: UserProfile): Promise<Anal
     Respond strictly in JSON format matching the defined schema.
   `;
 
-  const response = await callGeminiWithRetry(() => ai.models.generateContent({
+  const response = await callGeminiWithRetry(() => getAi().models.generateContent({
     model,
     contents: prompt,
     config: {
@@ -242,7 +259,7 @@ export async function chatWithMentor(context: string, history: { role: 'user' | 
     Mentor:
   `;
   
-  const response = await callGeminiWithRetry(() => ai.models.generateContent({
+  const response = await callGeminiWithRetry(() => getAi().models.generateContent({
     model,
     contents: prompt
   }));
@@ -253,7 +270,7 @@ export async function analyzeResume(resumeText: string): Promise<any> {
   const model = "gemini-3-flash-preview";
   const prompt = `Analyze this resume text for an engineering student in India. Provide an ATS score (0-100), missing keywords, and improvement suggestions. Respond in JSON. \n\nResume Text: ${resumeText}`;
   
-  const response = await callGeminiWithRetry(() => ai.models.generateContent({
+  const response = await callGeminiWithRetry(() => getAi().models.generateContent({
     model,
     contents: prompt,
     config: {
@@ -289,7 +306,7 @@ export async function conductMockInterview(context: string, lastMessage?: string
        
        Style: Professional and realistic.`;
     
-  const response = await callGeminiWithRetry(() => ai.models.generateContent({
+  const response = await callGeminiWithRetry(() => getAi().models.generateContent({
     model,
     contents: prompt
   }));

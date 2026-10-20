@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { LogOut, User, LayoutDashboard, FileText, MessageSquare, Compass, Moon, Sun } from 'lucide-react';
+import { RotateCcw, LayoutDashboard, FileText, MessageSquare, Compass, Moon, Sun } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;
-  user: any;
-  onLogout: () => void;
+  /** Clears the visitor's saved profile and analysis, returning to onboarding. */
+  onStartOver: () => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, onStartOver }) => {
   const location = useLocation();
   const [isDark, setIsDark] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
@@ -31,8 +31,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
     { name: 'Resume Analyzer', path: '/resume', icon: FileText },
     { name: 'Mock Interview', path: '/interview', icon: MessageSquare },
   ];
-
-  if (!user) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white">
@@ -78,21 +76,17 @@ export const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
             </button>
 
             <div className="flex items-center gap-3 pl-4 border-l border-slate-100 dark:border-slate-800">
-              <div className="text-right hidden sm:block">
-                <p className="text-[9px] font-black text-dark-blue dark:text-white truncate uppercase tracking-tight leading-none">{user.name}</p>
-                <p className="text-[7px] text-dark-blue/50 dark:text-white/30 truncate font-medium uppercase tracking-widest">{user.email}</p>
-              </div>
-              <div className="w-8 h-8 rounded-lg bg-dark-blue dark:bg-slate-50 flex items-center justify-center text-white dark:text-dark-blue font-black text-xs shadow-sm">
-                {user.name?.[0]?.toUpperCase()}
-              </div>
+              <p className="text-[7px] text-dark-blue/50 dark:text-white/30 font-medium uppercase tracking-widest hidden sm:block">
+                Saved in this browser
+              </p>
             </div>
-            
+
             <button
-              onClick={onLogout}
+              onClick={onStartOver}
               className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all duration-300"
-              title="Logout"
+              title="Start over — clears your saved profile and roadmap"
             >
-              <LogOut size={16} />
+              <RotateCcw size={16} />
             </button>
           </div>
         </div>

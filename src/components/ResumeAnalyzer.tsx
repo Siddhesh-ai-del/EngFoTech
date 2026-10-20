@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Upload, CheckCircle, AlertCircle, Search, Sparkles } from 'lucide-react';
+import { FileText, Upload, AlertCircle, Search, Sparkles } from 'lucide-react';
 import { analyzeResume } from '../services/geminiService';
 import { AnalysisResult } from '../types';
 import { PageNavigation } from './PageNavigation';

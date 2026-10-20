@@ -64,6 +64,7 @@ export default tseslint.config(
       // unused-imports adds an autofix that strips dead imports; the base rule
       // cannot do that, so it is replaced here rather than duplicated.
       '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'error',
         {argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_'},

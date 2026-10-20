@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageSquare, Send, User, Bot, Sparkles, RefreshCcw, Briefcase, TrendingUp, Building2, Rocket, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, Send, User, Bot, Sparkles, RefreshCcw } from 'lucide-react';
 import { conductMockInterview } from '../services/geminiService';
 import { AnalysisResult } from '../types';
 import { PageNavigation } from './PageNavigation';

@@ -18,7 +18,9 @@ export type Year = "1st" | "2nd" | "3rd" | "4th" | "Graduate";
 export type Tier = "Tier 1" | "Tier 2" | "Tier 3";
 
 export interface UserProfile {
-  userId: number;
+  /** Server-assigned id. Optional: the app is fully client-side, so a profile
+   *  exists without one unless it is later persisted to the API. */
+  userId?: number;
   university: string;
   college: string;
   branch: Branch;
