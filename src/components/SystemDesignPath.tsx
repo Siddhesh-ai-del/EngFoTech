@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Database, Layout, Server, Shield, Zap, Layers, Globe, Code2 } from 'lucide-react';
+import { Database, Shield, Zap, Layers, Globe, Code2 } from 'lucide-react';
 
 const topics = [
   { level: 'Beginner', title: 'Fundamentals', icon: <Code2 size={24} />, concepts: ['Client-Server Model', 'IP/DNS', 'HTTP/HTTPS', 'REST vs GraphQL'] },

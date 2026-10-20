@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, CheckCircle2, Star, TrendingUp, Zap } from 'lucide-react';
+import { Star, TrendingUp, Zap } from 'lucide-react';
 import { SkillGap } from '../types';
 
 interface SkillGapAnalyzerProps {

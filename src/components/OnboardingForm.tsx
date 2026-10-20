@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, Check, Sparkles, Code, Wrench, FolderGit2, Plus, X, FileCode2, Terminal, Code2, Github, Figma, Box, PenTool, Server, Globe, Database, Layout, Search, Settings, Laptop, Landmark, Factory, Rocket, Microscope, GraduationCap, Briefcase, CheckCircle2, IndianRupee, ChevronDown, BookOpen, Building, Award, LineChart } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Sparkles, FolderGit2, Plus, X, FileCode2, Terminal, Code2, Github, Figma, Box, PenTool, Server, Globe, Layout, Search, Settings, Laptop, Landmark, Factory, Rocket, Microscope, GraduationCap, Briefcase, CheckCircle2, IndianRupee, ChevronDown, Building } from 'lucide-react';
 import { BRANCHES, YEARS, TIERS, CAREER_INTERESTS } from '../constants';
 import { UserProfile } from '../types';
 
 interface OnboardingFormProps {
   onSubmit: (profile: Omit<UserProfile, 'userId'>) => void;
   isSubmitting: boolean;
-  onLogout?: () => void;
 }
 
 const POPULAR_LANGUAGES = [
@@ -47,7 +46,7 @@ const INTEREST_ICONS: Record<string, any> = {
   "Business / Entrepreneurship": Briefcase
 };
 
-export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubmitting, onLogout }) => {
+export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubmitting }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<UserProfile>>({
     university: "",
@@ -610,16 +609,8 @@ export const OnboardingForm: React.FC<OnboardingFormProps> = ({ onSubmit, isSubm
             </div>
           )}
 
-          <div className="mt-12 flex justify-between gap-4">
-            {step === 1 ? (
-              <button
-                onClick={onLogout}
-                className="px-8 py-4 rounded-2xl bg-slate-50 text-dark-blue font-bold hover:bg-slate-100 transition-all flex items-center gap-2 border border-slate-200"
-              >
-                <ChevronLeft size={20} />
-                Back to Login
-              </button>
-            ) : (
+          <div className={`mt-12 flex gap-4 ${step === 1 ? 'justify-end' : 'justify-between'}`}>
+            {step > 1 && (
               <button
                 onClick={prevStep}
                 className="px-8 py-4 rounded-2xl bg-slate-50 text-dark-blue font-bold hover:bg-slate-100 transition-all flex items-center gap-2 border border-slate-200"
